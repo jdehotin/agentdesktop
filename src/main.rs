@@ -24,6 +24,7 @@ use agent_desktop_core::{
 };
 use clap::{CommandFactory, Parser};
 use cli::{Cli, Commands};
+use cli_args::sandbox::SandboxActionCli;
 use cli_args::skills::SkillsAction;
 use std::io::{BufWriter, Write};
 use std::process::ExitCode;
@@ -118,6 +119,11 @@ fn run() -> ExitCode {
     };
 
     let cmd_name = cmd.name();
+    if let Commands::Sandbox(args) = &cmd
+        && let SandboxActionCli::Exec(exec) = &args.action
+    {
+        return dispatch::sandbox::run_exec(&cli, exec, cmd_name, &build_adapter());
+    }
     finish(cmd_name, execute(cli, cmd))
 }
 
